@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Editors and tooling
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.claude/
+
+# Python (solution/build.py)
+__pycache__/
+*.py[cod]
+.venv/
+
+# Node (not used today, but keeps a future toolchain out of the repo)
+node_modules/
+
+# Logs and temporary output
+*.log
+*.tmp
