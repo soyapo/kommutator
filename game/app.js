@@ -8,7 +8,7 @@
 
 const CONFIG = {
   author: '',   // shown in the footer when set, e.g. 'نام شما'
-  repoUrl: '',  // shown in the footer when set, e.g. 'https://github.com/user/kommutator'
+  repoUrl: 'https://github.com/soyapo/kommutator',  // shown in the footer when set
 };
 
 /* ----------------------------------------------------------------------------
