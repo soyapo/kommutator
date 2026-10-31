@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>حل معمای پایانی بازی «کموتاتور»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=block" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 20mm 19mm 22mm 19mm;
+          @bottom-center { content: counter(page); font-family: Vazirmatn, sans-serif; font-size: 10pt; color: #555; } }
+  :root { --ink: #1b1f2a; --blue: #1d4ed8; --row: #d6ebff; --col: #ffe3c4; --bad: #ffd9d9; --good: #d9f5df; --rule: #cbd5e1; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: Vazirmatn, "Geeza Pro", Tahoma, sans-serif; font-size: 11.3pt; line-height: 2.05; color: var(--ink); }
+  h1 { font-size: 20pt; font-weight: 800; margin: 0 0 2pt; text-align: center; line-height: 1.7; }
+  .sub { text-align: center; font-size: 12.5pt; margin: 0; color: #334155; }
+  .meta { text-align: center; font-size: 10.5pt; color: #475569; margin: 6pt 0 14pt; }
+  .meta span { margin: 0 10pt; }
+  h2 { font-size: 14pt; font-weight: 800; color: var(--blue); margin: 16pt 0 4pt; line-height: 1.7; break-after: avoid; }
+  h3 { font-size: 12pt; font-weight: 700; margin: 10pt 0 2pt; break-after: avoid; }
+  p { margin: 0 0 6pt; text-align: justify; }
+  ul, ol { margin: 0 0 6pt; padding-right: 22pt; }
+  li { margin-bottom: 2pt; }
+  /* Latin math fragments always flow left-to-right */
+  .m { direction: ltr; unicode-bidi: isolate; font-family: "Times New Roman", "STIX Two Text", serif; font-size: 1.08em; white-space: nowrap; }
+  .m i { font-style: italic; }
+  .m sub, .m sup { font-size: 0.72em; line-height: 0; font-style: normal; }
+  .m sub { vertical-align: -0.3em; } .m sup { vertical-align: 0.55em; }
+  .eq { direction: ltr; text-align: center; margin: 4pt 0 8pt; font-size: 1.12em; }
+  .box { border: 1.2pt solid var(--blue); border-radius: 6pt; padding: 8pt 12pt; margin: 10pt 0 12pt; background: #f3f7ff; }
+  .box p { margin: 0 0 4pt; }
+  .box .t { font-weight: 800; color: var(--blue); }
+  /* boards */
+  .board { border-collapse: collapse; margin: 0 auto; direction: ltr; font-family: "Times New Roman", serif; }
+  .board td { width: 30pt; height: 30pt; border: 1pt solid #111; text-align: center; vertical-align: middle; font-size: 15pt; padding: 0; background: #fff; }
+  .board.small td { width: 22pt; height: 22pt; font-size: 12pt; }
+  .board td.hr { background: var(--row); } .board td.hc { background: var(--col); }
+  .board td.hr.hc { background: #e9d8ff; }
+  .board td.bad { background: var(--bad); font-weight: 700; }
+  .board td.hr.bad, .board td.hc.bad { background: #ffbcbc; }
+  .board td.good { background: var(--good); }
+  .board td.lab, .board tr.lab td { border: none; background: transparent; font-size: 10.5pt; font-style: italic; width: 22pt; height: 18pt; color: #334155; }
+  .board tr.lab td sub, .board td.lab sub { font-style: normal; font-size: 0.7em; }
+  figure { margin: 8pt 0 10pt; break-inside: avoid; }
+  figcaption { text-align: center; font-size: 10pt; color: #334155; margin-top: 5pt; }
+  .figrow { display: flex; justify-content: center; align-items: center; gap: 14pt; flex-wrap: wrap; }
+  .chain { display: flex; direction: ltr; justify-content: center; align-items: center; gap: 4pt; flex-wrap: nowrap; }
+  .arrow { display: flex; flex-direction: column; align-items: center; min-width: 40pt; font-family: "Times New Roman", serif; font-size: 11pt; line-height: 1.1; }
+  .arrow .sym { font-size: 16pt; }
+  .caption-side { font-size: 9.5pt; color: #475569; text-align: center; margin-top: 2pt; }
+  /* step table */
+  table.steps { width: 100%; border-collapse: collapse; margin: 6pt 0 10pt; }
+  table.steps th, table.steps td { border: 1pt solid var(--rule); padding: 5pt 7pt; vertical-align: middle; }
+  table.steps th { background: #eef2ff; font-weight: 700; font-size: 10.5pt; }
+  table.steps td.mv { text-align: center; font-size: 1.05em; white-space: nowrap; width: 15%; }
+  table.steps td.bd { width: 24%; }
+  table.steps td.desc { font-size: 10.5pt; line-height: 1.9; }
+  table.steps tr { break-inside: avoid; }
+  table.hist { border-collapse: collapse; margin: 4pt auto 8pt; direction: ltr; font-size: 10pt; }
+  table.hist th, table.hist td { border: 1pt solid var(--rule); padding: 2pt 7pt; text-align: center; }
+  table.hist th { background: #eef2ff; }
+  .case { margin: 2pt 0 6pt; padding-right: 14pt; border-right: 2pt solid #e2e8f0; }
+  .case .lead { font-weight: 700; }
+  .qed { float: left; font-weight: 700; }
+  .note { font-size: 10.3pt; color: #334155; background: #f8fafc; border-right: 3pt solid #94a3b8; padding: 5pt 10pt; margin: 8pt 0; }
+  .pb { break-before: page; }
+  .nb { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<h1>حل معمای پایانی بازی «کموتاتور»</h1>
+<p class="sub">معمای دوم: سه مهرهٔ سرگردان ــ تمرین تحویلی</p>
+<p class="meta"><span>نام و نام خانوادگی: …………………………</span><span>آبان ۱۴۰۵</span></p>
+
+<div class="box">
+  <p class="t">چکیدهٔ پاسخ</p>
+  <p>صفحه با <b>دقیقاً چهار حرکت</b> مرتب می‌شود و با کمتر از چهار حرکت ممکن نیست. ترتیب اجرا: ابتدا {{m:R2^-1}}، سپس {{m:C2^-1}}، سپس {{m:R2}} و در پایان {{m:C2}}. با قرارداد «عامل سمت راست زودتر اجرا می‌شود»:</p>
+  <p class="eq"><span class="m"><i>S</i> = <i>C</i><sub>2</sub> <i>R</i><sub>2</sub> <i>C</i><sub>2</sub><sup>−1</sup> <i>R</i><sub>2</sub><sup>−1</sup> = [<i>C</i><sub>2</sub>, <i>R</i><sub>2</sub>]</span></p>
+  <p>یعنی راه‌حل، همان «جابجاگر» دو مولدی است که در خانهٔ مرکزی به هم می‌رسند. جست‌وجوی کامل رایانه‌ای نیز تأیید می‌کند که این <b>تنها</b> راه‌حل با حداکثر چهار حرکت است.</p>
+</div>
+
+<h2>۱. صورت مسئله</h2>
+<p>صفحه در وضعیت زیر قرار دارد و باید با حداکثر چهار حرکت مجاز (دور یک‌خانه‌ایِ یک سطر یا یک ستون، در جهت اصلی یا معکوس) به چیدمان مرتب بازگردانده شود. باید حرکت‌ها را به ترتیب اجرا بنویسیم، وضعیت صفحه را پس از هر حرکت رسم کنیم، شش مهره‌ای را که در آغاز در جای درست بودند در پایان به همان خانه‌ها بازگردانیم، و توالی را به‌صورت حاصل‌ضرب مولدها و معکوس‌های آن‌ها بنویسیم. پرسش تکمیلی این است که آیا با کمتر از چهار حرکت نیز می‌توان معما را حل کرد.</p>
+<figure>
+  <div class="figrow">
+    <div>{{START}}<div class="caption-side">وضعیت آغاز معما</div></div>
+    <div>{{SOLVED}}<div class="caption-side">چیدمان مرتب (هدف)</div></div>
+  </div>
+  <figcaption>شکل ۱: وضعیت آغاز (مهره‌های نابجا با رنگ قرمز) و چیدمان هدف.</figcaption>
+</figure>
+
+<h2>۲. نمادها و قراردادها</h2>
+<ul>
+  <li><b>نام‌گذاری خانه‌ها.</b> هر خانه را با شمارهٔ مهره‌ای می‌نامیم که در چیدمان مرتب در آن قرار دارد (خانهٔ ۱ تا ۹). سطرها از بالا به پایین و ستون‌ها از چپ به راست شماره‌گذاری می‌شوند (شکل ۲).</li>
+  <li><b>حرکت‌ها.</b> {{m:R1}}، {{m:R2}}، {{m:R3}}: دور سطری؛ هر مهرهٔ آن سطر یک خانه به راست می‌رود و مهرهٔ لبهٔ راست به خانهٔ چپ بازمی‌گردد. {{m:C1}}، {{m:C2}}، {{m:C3}}: دور ستونی؛ هر مهرهٔ آن ستون یک خانه به پایین می‌رود و مهرهٔ پایین به خانهٔ بالا بازمی‌گردد. معکوس هر حرکت مجاز است و <span class="m"><i>R</i><sub><i>i</i></sub><sup>3</sup> = <i>C</i><sub><i>j</i></sub><sup>3</sup> = <i>e</i></span>.</li>
+  <li><b>حرکت به‌عنوان جایگشت خانه‌ها.</b> هر حرکت را با جایگشتی روی خانه‌ها نشان می‌دهیم که می‌گوید مهرهٔ هر خانه به کدام خانه می‌رود. برای نمونه <span class="m"><i>R</i><sub>2</sub> = (4 5 6)</span> یعنی مهرهٔ خانهٔ ۴ به خانهٔ ۵، مهرهٔ خانهٔ ۵ به خانهٔ ۶ و مهرهٔ خانهٔ ۶ به خانهٔ ۴ می‌رود؛ به همین ترتیب <span class="m"><i>C</i><sub>2</sub> = (2 5 8)</span>.</li>
+  <li><b>قرارداد ترکیب.</b> در حاصل‌ضرب، عامل سمت راست زودتر اجرا می‌شود: اگر ابتدا <span class="m"><i>X</i></span> و سپس <span class="m"><i>Y</i></span> اجرا شود، می‌نویسیم <span class="m"><i>Y X</i></span>. جابجاگر دو حرکت نیز <span class="m">[<i>g</i>, <i>h</i>] = <i>g h g</i><sup>−1</sup> <i>h</i><sup>−1</sup></span> تعریف می‌شود.</li>
+  <li><b>مشاهدهٔ کلیدی.</b> هر حرکت مجاز یک <b>۳‑دور</b> است: دقیقاً سه خانهٔ یک سطر یا یک ستون را جابه‌جا می‌کند و شش خانهٔ دیگر را دست نمی‌زند. مجموعهٔ خانه‌هایی را که یک جایگشت جابه‌جا می‌کند «تکیه‌گاه» آن می‌نامیم.</li>
+</ul>
+<figure>
+  <div class="figrow">
+    <div>{{NUMBERING}}<div class="caption-side">شمارهٔ خانه‌ها</div></div>
+    <div>{{CROSS}}<div class="caption-side">سطر دوم (آبی)، ستون دوم (نارنجی) و سه خانهٔ نابجا</div></div>
+  </div>
+  <figcaption>شکل ۲: نام‌گذاری خانه‌ها، و موقعیت سه خانهٔ نابجای ۵، ۶ و ۸ نسبت به سطر دوم و ستون دوم.</figcaption>
+</figure>
+
+<h2>۳. تحلیل وضعیت آغاز</h2>
+<p>با مقایسهٔ وضعیت آغاز و چیدمان مرتب می‌بینیم که شش مهرهٔ ۱، ۲، ۳، ۴، ۷ و ۹ سر جای خود هستند و تنها سه مهره نابجا هستند:</p>
+<ul>
+  <li>خانهٔ ۵ (مرکز) مهرهٔ ۸ را در خود دارد؛ این مهره باید به خانهٔ ۸ برود.</li>
+  <li>خانهٔ ۸ مهرهٔ ۶ را در خود دارد؛ این مهره باید به خانهٔ ۶ برود.</li>
+  <li>خانهٔ ۶ مهرهٔ ۵ را در خود دارد؛ این مهره باید به خانهٔ ۵ برود.</li>
+</ul>
+<p>بنابراین تبدیلی که باید روی صفحه اعمال شود، جایگشت زیر روی خانه‌هاست:</p>
+<p class="eq"><span class="m"><i>σ</i> = (5 8 6)</span></p>
+<p>یعنی یک ۳‑دور روی سه خانهٔ ۵، ۶ و ۸. این سه خانه روی یک خط نیستند، بلکه شکل یک <b>گوشه</b> (حرف L) دارند: خانه‌های ۵ و ۶ در سطر دوم و خانه‌های ۵ و ۸ در ستون دوم قرار دارند، و خانهٔ ۵ محل تقاطع این سطر و ستون است (شکل ۲). پس هیچ حرکت منفردی نمی‌تواند دقیقاً همین سه خانه را جابه‌جا کند، و باید سطر دوم و ستون دوم را با هم به کار بگیریم.</p>
+
+<h2>۴. ایدهٔ حل: جابجاگر دو حرکت متقاطع</h2>
+<p>دو مولد {{m:R2}} و {{m:C2}} دقیقاً در یک خانه (خانهٔ ۵) مشترک‌اند. اثر جابجاگر چنین حرکت‌هایی را لم زیر مشخص می‌کند.</p>
+<p><b>لم.</b> فرض کنید <span class="m"><i>g</i> = (<i>x a b</i>)</span> و <span class="m"><i>h</i> = (<i>x c d</i>)</span> دو ۳‑دور باشند که فقط در <span class="m"><i>x</i></span> مشترک‌اند. آنگاه</p>
+<p class="eq"><span class="m">[<i>g</i>, <i>h</i>] = <i>g h g</i><sup>−1</sup> <i>h</i><sup>−1</sup> = (<i>x a c</i>) = (<i>x</i>&nbsp; <i>g</i>(<i>x</i>)&nbsp; <i>h</i>(<i>x</i>))</span></p>
+<p>یعنی جابجاگر، ۳‑دوری است روی خانهٔ مشترک و تصویرهای آن تحت دو حرکت.</p>
+<p><b>اثبات.</b> مزدوج یک دور با جایگزینی اعضای آن به دست می‌آید: <span class="m"><i>h g</i><sup>−1</sup> <i>h</i><sup>−1</sup> = (<i>h</i>(<i>x</i>) <i>h</i>(<i>b</i>) <i>h</i>(<i>a</i>)) = (<i>c b a</i>)</span>، زیرا <span class="m"><i>h</i></span> خانه‌های <span class="m"><i>a</i></span> و <span class="m"><i>b</i></span> را ثابت نگه می‌دارد. پس <span class="m">[<i>g</i>, <i>h</i>] = (<i>x a b</i>)(<i>c b a</i>)</span>. با اجرای عامل راست و سپس عامل چپ: <span class="m"><i>c</i> → <i>b</i> → <i>x</i></span>، <span class="m"><i>x</i> → <i>x</i> → <i>a</i></span>، <span class="m"><i>a</i> → <i>c</i> → <i>c</i></span>، و <span class="m"><i>b</i> → <i>a</i> → <i>b</i></span>؛ خانهٔ <span class="m"><i>d</i></span> نیز ثابت می‌ماند. بنابراین <span class="m">[<i>g</i>, <i>h</i>] = (<i>c x a</i>) = (<i>x a c</i>)</span>.<span class="qed">∎</span></p>
+<p><b>کاربرد در معما.</b> با <span class="m"><i>g</i> = <i>R</i><sub>2</sub> = (4 5 6)</span> و <span class="m"><i>h</i> = <i>C</i><sub>2</sub> = (2 5 8)</span> داریم <span class="m"><i>x</i> = 5</span>، <span class="m"><i>R</i><sub>2</sub>(5) = 6</span> و <span class="m"><i>C</i><sub>2</sub>(5) = 8</span>؛ پس</p>
+<p class="eq"><span class="m">[<i>R</i><sub>2</sub>, <i>C</i><sub>2</sub>] = (5 6 8)</span></p>
+<p>این دقیقاً همان سه خانهٔ نابجاست، اما در جهت وارون. چون <span class="m">[<i>g</i>, <i>h</i>]<sup>−1</sup> = <i>h g h</i><sup>−1</sup> <i>g</i><sup>−1</sup> = [<i>h</i>, <i>g</i>]</span>، جایگشت مورد نیاز برابر است با</p>
+<p class="eq"><span class="m"><i>σ</i> = (5 8 6) = [<i>R</i><sub>2</sub>, <i>C</i><sub>2</sub>]<sup>−1</sup> = [<i>C</i><sub>2</sub>, <i>R</i><sub>2</sub>] = <i>C</i><sub>2</sub> <i>R</i><sub>2</sub> <i>C</i><sub>2</sub><sup>−1</sup> <i>R</i><sub>2</sub><sup>−1</sup></span></p>
+<p>بنا بر قرارداد ترکیب، عامل سمت راست اول اجرا می‌شود؛ پس ترتیب اجرای حرکت‌ها چنین است: <b>{{m:R2^-1}}، سپس {{m:C2^-1}}، سپس {{m:R2}}، سپس {{m:C2}}</b>. (می‌توان لم را مستقیماً با <span class="m"><i>g</i> = <i>C</i><sub>2</sub> = (5 8 2)</span> و <span class="m"><i>h</i> = <i>R</i><sub>2</sub> = (5 6 4)</span> نیز به کار برد و بی‌واسطه به <span class="m">[<i>C</i><sub>2</sub>, <i>R</i><sub>2</sub>] = (5 8 6)</span> رسید.)</p>
+
+<h2>۵. اجرای حرکت‌ها و وضعیت صفحه پس از هر حرکت</h2>
+<table class="steps">
+  <tr><th>گام</th><th>حرکت</th><th>شرح</th><th>صفحه پس از حرکت</th></tr>
+  <tr>
+    <td class="mv">۰</td><td class="mv">—</td>
+    <td class="desc">وضعیت آغاز. مهره‌های ۸، ۵ و ۶ به‌ترتیب در خانه‌های ۵، ۶ و ۸ نشسته‌اند.</td>
+    <td class="bd">{{B0}}</td>
+  </tr>
+  <tr>
+    <td class="mv">۱</td><td class="mv">{{m:R2^-1}}</td>
+    <td class="desc">سطر دوم یک خانه به <b>چپ</b> می‌چرخد: <span class="m">(4, 8, 5) → (8, 5, 4)</span>. مهرهٔ ۵ به خانهٔ خود می‌رسد (هرچند در گام بعد دوباره جابه‌جا می‌شود)؛ مهرهٔ ۴ موقتاً از جای خود خارج می‌شود.</td>
+    <td class="bd">{{B1}}</td>
+  </tr>
+  <tr>
+    <td class="mv">۲</td><td class="mv">{{m:C2^-1}}</td>
+    <td class="desc">ستون دوم یک خانه به <b>بالا</b> می‌چرخد: <span class="m">(2, 5, 6) → (5, 6, 2)</span>. مهره‌های ۲ و ۵ موقتاً از جای خود خارج می‌شوند و مهرهٔ ۶ به خانهٔ مرکزی می‌آید تا در گام بعد با چرخش سطر به خانهٔ خود برسد.</td>
+    <td class="bd">{{B2}}</td>
+  </tr>
+  <tr>
+    <td class="mv">۳</td><td class="mv">{{m:R2}}</td>
+    <td class="desc">سطر دوم یک خانه به <b>راست</b> می‌چرخد: <span class="m">(8, 6, 4) → (4, 8, 6)</span>. مهره‌های ۴ و ۶ در خانهٔ درست خود قرار می‌گیرند.</td>
+    <td class="bd">{{B3}}</td>
+  </tr>
+  <tr>
+    <td class="mv">۴</td><td class="mv">{{m:C2}}</td>
+    <td class="desc">ستون دوم یک خانه به <b>پایین</b> می‌چرخد: <span class="m">(5, 8, 2) → (2, 5, 8)</span>. مهره‌های ۲، ۵ و ۸ نیز به جای خود می‌رسند؛ صفحه مرتب است.</td>
+    <td class="bd">{{B4}}</td>
+  </tr>
+</table>
+<figure class="nb">
+  <div class="chain">
+    {{S0}}
+    <div class="arrow"><span>{{m:R2^-1}}</span><span class="sym">⟶</span></div>
+    {{S1}}
+    <div class="arrow"><span>{{m:C2^-1}}</span><span class="sym">⟶</span></div>
+    {{S2}}
+    <div class="arrow"><span>{{m:R2}}</span><span class="sym">⟶</span></div>
+    {{S3}}
+    <div class="arrow"><span>{{m:C2}}</span><span class="sym">⟶</span></div>
+    {{S4}}
+  </div>
+  <figcaption>شکل ۳: نمای کلی حل؛ شکل‌ها از چپ به راست خوانده می‌شوند و خطِ چرخانده‌شده در هر گام رنگی است.</figcaption>
+</figure>
+<p>در میانهٔ حل، مهره‌های ۲ و ۴ موقتاً از خانهٔ خود خارج شدند (که مجاز است) و در پایان به همان خانه‌ها بازگشتند. بنابراین شش مهرهٔ ۱، ۲، ۳، ۴، ۷ و ۹ که در آغاز درست بودند، در پایان نیز همگی در خانه‌های خود قرار دارند و صفحه دقیقاً به چیدمان مرتب رسیده است.</p>
+
+<h2>۶. توالی حل به‌صورت حاصل‌ضرب مولدها</h2>
+<p>با رعایت قرارداد «عامل سمت راست زودتر اجرا می‌شود»، توالی حل عبارت است از</p>
+<p class="eq"><span class="m"><i>S</i> = <i>C</i><sub>2</sub> <i>R</i><sub>2</sub> <i>C</i><sub>2</sub><sup>−1</sup> <i>R</i><sub>2</sub><sup>−1</sup> = [<i>C</i><sub>2</sub>, <i>R</i><sub>2</sub>] = [<i>R</i><sub>2</sub>, <i>C</i><sub>2</sub>]<sup>−1</sup></span></p>
+<p>و اثر آن روی خانه‌ها همان <span class="m"><i>σ</i> = (5 8 6)</span> است. نکتهٔ جالب این است که وضعیت آغاز معما خودش حاصل اعمال «حرکت ویژهٔ» <span class="m">[<i>R</i><sub>2</sub>, <i>C</i><sub>2</sub>] = <i>R</i><sub>2</sub> <i>C</i><sub>2</sub> <i>R</i><sub>2</sub><sup>−1</sup> <i>C</i><sub>2</sub><sup>−1</sup></span> ــ همان بستهٔ حرکتی معرفی‌شده در طرح بازی ــ بر صفحهٔ مرتب است؛ پس طبیعی است که وارون آن معما را حل کند.</p>
+
+<h2>۷. پرسش تکمیلی: چرا با کمتر از چهار حرکت نمی‌توان؟</h2>
+<p>نشان می‌دهیم هیچ دنباله‌ای از ۱، ۲ یا ۳ حرکت مجاز، جایگشت <span class="m"><i>σ</i></span> را نمی‌سازد. تکیه‌گاه <span class="m"><i>σ</i></span> دقیقاً <span class="m">{5, 6, 8}</span> است؛ این مجموعه نه داخل یک خط (سطر یا ستون) جا می‌گیرد و نه هیچ خط کاملی را در بر دارد. در ادامه «خط» به معنای یک سطر یا یک ستون است و دو خط را موازی می‌نامیم اگر هر دو سطر یا هر دو ستون باشند (در این صورت مجزا هستند) و متقاطع می‌نامیم اگر یکی سطر و دیگری ستون باشد (در این صورت دقیقاً یک خانهٔ مشترک دارند).</p>
+<p><b>لم ۱.</b> هر حرکت مجاز ۳‑دوری است که تکیه‌گاهش دقیقاً خانه‌های یک خط است. (تعریف حرکت‌ها.)</p>
+<p><b>لم ۲.</b> (الف) حاصل‌ضرب دو ۳‑دور با تکیه‌گاه‌های مجزا، دقیقاً ۶ خانه را جابه‌جا می‌کند. (ب) حاصل‌ضرب دو ۳‑دور که دقیقاً یک خانهٔ مشترک دارند، یک ۵‑دور است و دقیقاً ۵ خانه را جابه‌جا می‌کند. (ج) حاصل‌ضرب دو حرکت روی یک خط، توانی از دور همان خط است و تکیه‌گاهش داخل آن خط می‌ماند.</p>
+<p><b>اثبات (ب).</b> <span class="m">(<i>x a b</i>)(<i>x c d</i>)</span>: با اجرای عامل راست و سپس عامل چپ، <span class="m"><i>x</i> → <i>c</i></span>، <span class="m"><i>c</i> → <i>d</i></span>، <span class="m"><i>d</i> → <i>a</i></span>، <span class="m"><i>a</i> → <i>b</i></span>، <span class="m"><i>b</i> → <i>x</i></span>؛ یعنی <span class="m">(<i>x c d a b</i>)</span>. اگر جهت هر یک از دو دور وارون شود (جابه‌جایی <span class="m"><i>a</i>, <i>b</i></span> یا <span class="m"><i>c</i>, <i>d</i></span>) همین محاسبه باز هم یک ۵‑دور می‌دهد. موارد (الف) و (ج) بدیهی‌اند.<span class="qed">∎</span></p>
+
+<h3>یک حرکت</h3>
+<p>طبق لم ۱ تکیه‌گاه یک حرکت، خط کاملی است؛ اما <span class="m">{5, 6, 8}</span> خط نیست. پس ممکن نیست.</p>
+
+<h3>دو حرکت</h3>
+<div class="case"><p>اگر هر دو حرکت روی یک خط باشند، تکیه‌گاه حاصل داخل همان خط است (لم ۲‑ج). اگر روی دو خط موازی باشند، ۶ خانه جابه‌جا می‌شود (لم ۲‑الف). اگر روی یک سطر و یک ستون باشند، حاصل یک ۵‑دور است (لم ۲‑ب). در هیچ حالتی تکیه‌گاه برابر با سه خانهٔ غیرهم‌خط <span class="m">{5, 6, 8}</span> نمی‌شود. پس ممکن نیست.</p></div>
+
+<h3>سه حرکت</h3>
+<p>فرض کنید <span class="m"><i>S</i> = <i>Z Y X</i></span> با سه حرکت مجاز، و بر حسب تعداد خط‌های متمایزِ به‌کاررفته حالت‌بندی می‌کنیم.</p>
+<div class="case">
+  <p><span class="lead">حالت ۱: هر سه حرکت روی یک خط.</span> حاصل توانی از دور همان خط است و تکیه‌گاهش داخل یک خط می‌ماند. ممکن نیست.</p>
+</div>
+<div class="case">
+  <p><span class="lead">حالت ۲: دقیقاً دو خط متمایز؛ خط <span class="m"><i>L</i></span> دو بار و خط <span class="m"><i>M</i></span> یک بار به کار رفته است.</span></p>
+  <ul>
+    <li><b><span class="m"><i>L</i></span> و <span class="m"><i>M</i></span> موازی.</b> حرکت‌های روی خط‌های مجزا با هم جابه‌جا می‌شوند، پس <span class="m"><i>S</i> = <i>L</i><sup><i>a</i></sup> <i>M</i><sup>±1</sup></span>. عامل <span class="m"><i>M</i><sup>±1</sup></span> هر سه خانهٔ <span class="m"><i>M</i></span> را جابه‌جا می‌کند و <span class="m"><i>L</i><sup><i>a</i></sup></span> به آن‌ها دست نمی‌زند؛ پس تکیه‌گاه <span class="m"><i>S</i></span> شامل خط کامل <span class="m"><i>M</i></span> است، در حالی که <span class="m">{5, 6, 8}</span> هیچ خط کاملی را در بر ندارد. ممکن نیست.</li>
+    <li><b><span class="m"><i>L</i></span> و <span class="m"><i>M</i></span> متقاطع با خانهٔ مشترک <span class="m"><i>x</i></span>؛ دو حرکتِ روی <span class="m"><i>L</i></span> کنار هم (الگوی <span class="m"><i>L L M</i></span> یا <span class="m"><i>M L L</i></span>).</b> دو حرکت متوالی روی یک خط به <span class="m"><i>L</i><sup>∓1</sup></span> یا <span class="m"><i>e</i></span> فرو می‌کاهد؛ پس <span class="m"><i>S</i></span> با حداکثر دو حرکت برابر است و بنا بر بند پیشین ممکن نیست.</li>
+    <li><b>متقاطع؛ الگوی <span class="m"><i>L M L</i></span> با توان‌های مخالف.</b> <span class="m"><i>S</i> = <i>L</i><sup>−<i>u</i></sup> <i>M</i><sup><i>t</i></sup> <i>L</i><sup><i>u</i></sup></span> مزدوجِ <span class="m"><i>M</i><sup><i>t</i></sup></span> است، پس ۳‑دوری است روی تصویر تکیه‌گاه <span class="m"><i>M</i></span> تحت <span class="m"><i>L</i><sup>−<i>u</i></sup></span>: دو خانهٔ <span class="m"><i>M</i></span> غیر از <span class="m"><i>x</i></span> (بنامیم <span class="m"><i>m</i><sub>1</sub>, <i>m</i><sub>2</sub></span>) ثابت می‌مانند و <span class="m"><i>x</i></span> به خانهٔ دیگری از <span class="m"><i>L</i></span> (بنامیم <span class="m"><i>y</i></span>) می‌رود. پس تکیه‌گاه <span class="m"><i>S</i></span> برابر <span class="m">{<i>m</i><sub>1</sub>, <i>m</i><sub>2</sub>, <i>y</i>}</span> است: دو خانهٔ هم‌خط روی <span class="m"><i>M</i></span>، و خانهٔ سومی روی خطِ متقاطعِ <span class="m"><i>L</i></span> که از خانهٔ سوم <span class="m"><i>M</i></span> می‌گذرد. آیا <span class="m">{5, 6, 8}</span> چنین ساختاری دارد؟
+      <ul>
+        <li><span class="m">{5, 6}</span> در سطر دوم‌اند؛ پس <span class="m"><i>M</i> = <i>R</i><sub>2</sub></span>، <span class="m"><i>x</i> = 4</span> و <span class="m"><i>L</i> = <i>C</i><sub>1</sub> = {1, 4, 7}</span>؛ آنگاه <span class="m"><i>y</i> ∈ {1, 7}</span>، در حالی که باید <span class="m"><i>y</i> = 8</span> باشد. ممکن نیست.</li>
+        <li><span class="m">{5, 8}</span> در ستون دوم‌اند؛ پس <span class="m"><i>M</i> = <i>C</i><sub>2</sub></span>، <span class="m"><i>x</i> = 2</span> و <span class="m"><i>L</i> = <i>R</i><sub>1</sub> = {1, 2, 3}</span>؛ آنگاه <span class="m"><i>y</i> ∈ {1, 3}</span>، در حالی که باید <span class="m"><i>y</i> = 6</span> باشد. ممکن نیست.</li>
+        <li><span class="m">{6, 8}</span> هم‌خط نیستند. ممکن نیست.</li>
+      </ul>
+    </li>
+    <li><b>متقاطع؛ الگوی <span class="m"><i>L M L</i></span> با توان‌های یکسان.</b> <span class="m"><i>S</i> = <i>L</i><sup><i>u</i></sup> <i>M</i><sup><i>t</i></sup> <i>L</i><sup><i>u</i></sup> = (<i>L</i><sup><i>u</i></sup> <i>M</i><sup><i>t</i></sup> <i>L</i><sup>−<i>u</i></sup>) <i>L</i><sup>2<i>u</i></sup></span>: حاصل‌ضرب یک ۳‑دور روی <span class="m">{<i>m</i><sub>1</sub>, <i>m</i><sub>2</sub>, <i>y</i>}</span> در ۳‑دوری روی <span class="m"><i>L</i></span>، که فقط در خانهٔ <span class="m"><i>y</i></span> مشترک‌اند؛ بنا بر لم ۲‑ب یک ۵‑دور است. ممکن نیست.</li>
+  </ul>
+</div>
+<div class="case">
+  <p><span class="lead">حالت ۳: سه خط متمایز.</span> چون تنها دو جهت (سطری و ستونی) داریم، دست‌کم دو تا از سه خط موازی‌اند؛ آن‌ها را <span class="m"><i>L</i></span> و <span class="m"><i>M</i></span> و خط سوم را <span class="m"><i>N</i></span> بنامیم.</p>
+  <ul>
+    <li><b><span class="m"><i>N</i></span> نیز با آن‌ها موازی.</b> سه ۳‑دور مجزا هر ۹ خانه را جابه‌جا می‌کنند. ممکن نیست.</li>
+    <li><b><span class="m"><i>N</i></span> متقاطع با <span class="m"><i>L</i></span> و <span class="m"><i>M</i></span>.</b> خانه‌ای مانند <span class="m"><i>c</i></span> از <span class="m"><i>L</i></span> را در نظر بگیرید که در <span class="m"><i>N</i></span> نیست (دو چنین خانه‌ای وجود دارد). تنها حرکتی که <span class="m"><i>c</i></span> را لمس می‌کند، حرکتِ روی <span class="m"><i>L</i></span> است؛ پس مهرهٔ <span class="m"><i>c</i></span> تا پیش از اجرای آن سر جای خود می‌ماند و با اجرای آن به خانهٔ دیگری از <span class="m"><i>L</i></span> می‌رود. پس از آن هیچ حرکتی نمی‌تواند آن را به <span class="m"><i>c</i></span> بازگرداند: حرکت <span class="m"><i>M</i></span> هیچ خانه‌ای از <span class="m"><i>L</i></span> را لمس نمی‌کند، و حرکت <span class="m"><i>N</i></span> تنها خانهٔ <span class="m"><i>L</i> ∩ <i>N</i></span> را لمس می‌کند و مهره را از آنجا فقط به خانه‌های <span class="m"><i>N</i></span> بیرون از <span class="m"><i>L</i></span> (و سپس احتمالاً درون <span class="m"><i>M</i></span>) می‌برد که هیچ‌کدام <span class="m"><i>c</i></span> نیستند. بنابراین <span class="m"><i>c</i></span> در تکیه‌گاه <span class="m"><i>S</i></span> است. همین استدلال برای هر دو خانهٔ <span class="m"><i>L</i> ∖ <i>N</i></span> و هر دو خانهٔ <span class="m"><i>M</i> ∖ <i>N</i></span> برقرار است؛ پس دست‌کم ۴ خانه جابه‌جا می‌شود. ممکن نیست.</li>
+  </ul>
+</div>
+<p><b>نتیجه.</b> هیچ دنباله‌ای با ۱، ۲ یا ۳ حرکت، جایگشت <span class="m"><i>σ</i></span> را نمی‌سازد. چون در بخش ۵ راه‌حلی با چهار حرکت ارائه شد، <b>کمترین تعداد حرکت دقیقاً چهار است</b> و پاسخ پرسش تکمیلی منفی است.<span class="qed">∎</span></p>
+
+<div class="note">
+  <p><b>چرا استدلال زوجیت کافی نیست؟</b> هر مولد یک ۳‑دور و در نتیجه یک جایگشت زوج است؛ پس همهٔ وضعیت‌های دست‌یافتنی جایگشت‌های زوج‌اند (گروه تولیدشده در واقع همان گروه متناوب <span class="m"><i>A</i><sub>9</sub></span> با <span class="m">181440</span> عضو است). اما <span class="m"><i>σ</i></span> هم زوج است، پس زوجیت مانعی ایجاد نمی‌کند و کران پایین باید ــ چنان‌که در بالا انجام شد ــ از شمارش خانه‌های جابه‌جاشده به دست آید.</p>
+  <p><b>تأیید رایانه‌ای.</b> جست‌وجوی سطح‌به‌سطح (BFS) از چیدمان مرتب روی همهٔ <span class="m">181440</span> وضعیت دست‌یافتنی نشان می‌دهد که فاصلهٔ وضعیت معما دقیقاً ۴ حرکت است، <b>تنها یک</b> دنباله با حداکثر چهار حرکت آن را حل می‌کند (همان <span class="m"><i>S</i></span> بالا)، و دورترین وضعیت‌ها به ۸ حرکت نیاز دارند. تعداد وضعیت‌ها بر حسب کمترین تعداد حرکت تا چیدمان مرتب:</p>
+  <table class="hist"><tr><th>فاصله</th>{{HIST_HEAD}}</tr><tr><th>تعداد وضعیت</th>{{HIST_ROWS}}</tr></table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>کموتاتور — بازی جبر مجرد</title>
+<meta name="description" content="بازی «کموتاتور»: جبر مجرد را با چرخاندن سطرها و ستون‌های یک صفحهٔ ۳×۳ لمس کنید. مولدها، معکوس‌ها و جابجاگرها را روی صفحه ببینید.">
+<meta name="theme-color" content="#070b1a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070b1a'/%3E%3Cg fill='none' stroke='%2389b4ff' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M14 22h26M14 42h26'/%3E%3Cpath d='M34 14l8 8-8 8M34 34l8 8-8 8'/%3E%3C/g%3E%3Ccircle cx='52' cy='32' r='5' fill='%23ff7ad9'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div class="grid"></div>
+</div>
+
+<header class="top">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="44" height="44"><rect width="64" height="64" rx="16" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.14)"/><g fill="none" stroke="#89b4ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 22h26M14 42h26"/><path d="M34 14l8 8-8 8M34 34l8 8-8 8"/></g><circle cx="52" cy="32" r="5" fill="#ff7ad9"/></svg>
+    </div>
+    <div class="brand-text">
+      <h1 data-i18n="title">کموتاتور</h1>
+      <p data-i18n="tagline">یادگیری جبر مجرد از طریق تعامل</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <button class="chip-btn" id="btn-help" type="button" data-i18n-title="help" title="راهنما">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4.5"/><path d="M12 18h.01"/></svg>
+      <span data-i18n="help">راهنما</span>
+    </button>
+    <button class="chip-btn" id="btn-sound" type="button" aria-pressed="true" data-i18n-title="sound" title="صدا">
+      <svg class="ic-on" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/></svg>
+      <svg class="ic-off" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="m22 9-6 6M16 9l6 6"/></svg>
+    </button>
+    <button class="chip-btn lang" id="btn-lang" type="button" aria-label="Switch language">EN</button>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- ============================== STAGE ============================== -->
+  <section class="stage">
+    <div class="goal-strip">
+      <div class="goal-title">
+        <span class="goal-kicker" data-i18n="currentGoal">هدف فعلی</span>
+        <strong id="goal-name">—</strong>
+      </div>
+      <p class="goal-desc" id="goal-desc"></p>
+    </div>
+
+    <div class="board-wrap" dir="ltr">
+      <div class="ctl-row top" id="ctl-top"></div>
+      <div class="board-middle">
+        <div class="ctl-col left" id="ctl-left"></div>
+        <div class="board" id="board">
+          <div class="well" id="well"></div>
+          <svg class="arrows" id="arrows" aria-hidden="true"></svg>
+          <div class="board-glow" aria-hidden="true"></div>
+        </div>
+        <div class="ctl-col right" id="ctl-right"></div>
+      </div>
+      <div class="ctl-row bottom" id="ctl-bottom"></div>
+    </div>
+    <p class="board-tip" data-i18n="boardTip">برای حرکت، فلش‌ها را بزنید یا روی صفحه انگشت بکشید.</p>
+
+    <div class="status">
+      <div class="stat">
+        <span class="stat-label" data-i18n="moves">حرکت‌ها</span>
+        <span class="stat-value" id="stat-moves">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label" data-i18n="par">کمینهٔ ممکن</span>
+        <span class="stat-value" id="stat-par">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label" data-i18n="misplaced">مهره‌های نابجا</span>
+        <span class="stat-value" id="stat-misplaced">0</span>
+      </div>
+      <div class="stat wide">
+        <span class="stat-label" data-i18n="word">کلمهٔ حرکت‌ها <small data-i18n="wordHint">(عامل سمت راست زودتر اجرا می‌شود)</small></span>
+        <div class="word" id="word" dir="ltr"><span class="e">e</span></div>
+      </div>
+      <div class="stat wide">
+        <span class="stat-label" data-i18n="order">ترتیب اجرا</span>
+        <div class="chips" id="chips" dir="ltr"><span class="muted" data-i18n="noMoves">هنوز حرکتی انجام نشده</span></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="btn-undo" type="button"><span class="k">⌫</span><span data-i18n="undo">واگرد</span></button>
+      <button class="btn" id="btn-reset" type="button"><span class="k">↺</span><span data-i18n="reset">از نو</span></button>
+      <button class="btn accent" id="btn-hint" type="button"><span class="k">✦</span><span data-i18n="hint">راهنمایی</span></button>
+      <button class="btn accent" id="btn-solve" type="button"><span class="k">▶</span><span data-i18n="solve">حل خودکار</span></button>
+      <button class="btn ghost" id="btn-arrows" type="button" aria-pressed="false"><span class="k">⤳</span><span data-i18n="showPaths">مسیر مهره‌ها</span></button>
+      <button class="btn ghost" id="btn-share" type="button"><span class="k">⎘</span><span data-i18n="share">اشتراک‌گذاری</span></button>
+    </div>
+    <p class="notice" id="notice" role="status" aria-live="polite"></p>
+  </section>
+
+  <!-- ============================== PANEL ============================== -->
+  <aside class="panel">
+    <nav class="tabs" role="tablist">
+      <button class="tab active" role="tab" data-tab="puzzles" aria-selected="true" data-i18n="tabPuzzles">معماها</button>
+      <button class="tab" role="tab" data-tab="lab" aria-selected="false" data-i18n="tabLab">آزمایشگاه</button>
+      <button class="tab" role="tab" data-tab="comm" aria-selected="false" data-i18n="tabComm">جابجاگر</button>
+    </nav>
+
+    <section class="tab-body active" id="tab-puzzles">
+      <div class="card special">
+        <div class="card-head">
+          <h3 data-i18n="scrambleTitle">درهم‌ریزی تصادفی</h3>
+          <span class="badge" id="scramble-par-badge"></span>
+        </div>
+        <p class="small" data-i18n="scrambleDesc">صفحه‌ای تصادفی با دقیقاً همین تعداد حرکت تا چیدمان مرتب.</p>
+        <div class="row">
+          <label class="range-label"><span data-i18n="difficulty">سختی</span> <output id="diff-out">5</output></label>
+          <input type="range" id="diff" min="2" max="8" value="5" step="1">
+        </div>
+        <div class="row">
+          <button class="btn small" id="btn-scramble" type="button" data-i18n="scramble">درهم بریز</button>
+          <button class="btn small ghost" id="btn-daily" type="button" data-i18n="daily">چالش امروز</button>
+        </div>
+      </div>
+      <div class="puzzle-list" id="puzzle-list"></div>
+    </section>
+
+    <section class="tab-body" id="tab-lab">
+      <div class="card">
+        <h3 data-i18n="labTitle">تحلیل وضعیت فعلی</h3>
+        <dl class="kv">
+          <dt data-i18n="cycleNotation">جایگشت خانه‌ها (نماد دوری)</dt><dd class="mono" id="lab-cycles" dir="ltr">e</dd>
+          <dt data-i18n="elementOrder">مرتبهٔ این عنصر</dt><dd id="lab-order">1</dd>
+          <dt data-i18n="parity">زوجیت</dt><dd id="lab-parity"></dd>
+          <dt data-i18n="distance">فاصله تا چیدمان مرتب</dt><dd id="lab-dist">0</dd>
+          <dt data-i18n="reducedWord">کلمهٔ ساده‌شده</dt><dd class="mono" id="lab-reduced" dir="ltr">e</dd>
+        </dl>
+        <div class="row">
+          <button class="btn small" id="btn-sandbox" type="button" data-i18n="sandbox">صفحهٔ آزاد (از چیدمان مرتب)</button>
+          <button class="btn small ghost" id="btn-invert" type="button" data-i18n="applyInverse">اجرای معکوس کل کلمه</button>
+        </div>
+        <p class="small muted" data-i18n="labNote">هر حرکت یک ۳‑دور (جایگشت زوج) است؛ پس تنها جایگشت‌های زوج صفحه ــ یعنی گروه متناوب A₉ با ۱۸۱٬۴۴۰ عضو ــ دست‌یافتنی‌اند و دورترین وضعیت‌ها ۸ حرکت فاصله دارند.</p>
+      </div>
+      <div class="card">
+        <h3 data-i18n="customTitle">وضعیت دلخواه</h3>
+        <p class="small" data-i18n="customDesc">نُه رقم ۱ تا ۹ را به ترتیب سطرها وارد کنید تا به‌عنوان معما بارگذاری شود.</p>
+        <div class="row">
+          <input class="input mono" id="custom-input" dir="ltr" inputmode="numeric" maxlength="9" placeholder="123485769" spellcheck="false">
+          <button class="btn small" id="btn-custom" type="button" data-i18n="load">بارگذاری</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-body" id="tab-comm">
+      <div class="card">
+        <h3 data-i18n="commTitle">آزمایشگاه جابجاگر</h3>
+        <p class="small" data-i18n="commDesc">دو حرکت g و h را انتخاب کنید. جابجاگر [g, h] = g h g⁻¹ h⁻¹ نشان می‌دهد این دو چقدر «جابه‌جا نمی‌شوند».</p>
+        <div class="pickers" dir="ltr">
+          <div class="picker"><label for="sel-g"><i>g</i></label><select id="sel-g"></select></div>
+          <div class="picker"><label for="sel-h"><i>h</i></label><select id="sel-h"></select></div>
+          <button class="btn small ghost" id="btn-swap" type="button" title="[h, g]">⇄</button>
+        </div>
+        <div class="comm-word" id="comm-word" dir="ltr"></div>
+        <div class="comm-preview">
+          <div id="comm-board"></div>
+          <div class="comm-info">
+            <p id="comm-result"></p>
+            <p class="small muted" id="comm-exec"></p>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn small" id="btn-comm-apply" type="button" data-i18n="applyOnBoard">اجرا روی صفحه</button>
+          <button class="btn small ghost" id="btn-comm-inverse" type="button" data-i18n="applyInverseComm">اجرای معکوس [h, g]</button>
+        </div>
+        <p class="small muted" data-i18n="commNote">اگر دو خط موازی باشند، حرکت‌ها جابه‌جا می‌شوند و جابجاگر همانی است. اگر یک سطر و یک ستون باشند، جابجاگر یک ۳‑دور روی خانهٔ مشترک و دو همسایهٔ آن است: ابزار اصلی حل معماها.</p>
+      </div>
+    </section>
+  </aside>
+</main>
+
+<footer class="foot">
+  <span data-i18n="credit">بر اساس طرح بازی «کموتاتور» (بهزاد نجفی) · نسخهٔ وب برای درس جبر مجرد</span>
+  <span id="foot-extra"></span>
+</footer>
+
+<!-- win modal -->
+<div class="modal" id="modal-win" hidden>
+  <div class="modal-card">
+    <button class="modal-x" type="button" data-close aria-label="close">×</button>
+    <div class="win-badge">✓</div>
+    <h2 id="win-title" data-i18n="winTitle">حل شد!</h2>
+    <p id="win-sub"></p>
+    <div class="word big" id="win-word" dir="ltr"></div>
+    <div class="row center">
+      <button class="btn accent" id="btn-next" type="button" data-i18n="nextPuzzle">معمای بعدی</button>
+      <button class="btn" id="btn-again" type="button" data-i18n="again">دوباره</button>
+      <button class="btn ghost" type="button" data-close data-i18n="keepPlaying">ادامه</button>
+    </div>
+  </div>
+</div>
+
+<!-- help modal -->
+<div class="modal" id="modal-help" hidden>
+  <div class="modal-card wide">
+    <button class="modal-x" type="button" data-close aria-label="close">×</button>
+    <h2 data-i18n="helpTitle">بازی «کموتاتور» چیست؟</h2>
+    <div class="help-body" id="help-body"></div>
+    <div class="row center"><button class="btn accent" type="button" data-close data-i18n="gotIt">فهمیدم</button></div>
+  </div>
+</div>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<script src="app.js"></script>
+</body>
+</html>
